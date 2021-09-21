@@ -1,0 +1,45 @@
+#!/bin/sh
+VAR="/${HOME}/Lc"
+if [ ! $1 ]; then
+	tmux kill-session -t LcCli
+	tmux kill-session -t LcApi
+	tmux kill-session -t LcCleaner
+	sleep 1s
+	tmux new -s LcCli -d
+	tmux new -s LcApi -d
+	tmux new -s LcCleaner -d
+	tmux send-keys -t LcCli "$VAR/run bot" C-m
+	echo "[BOT] Launched !"
+	sleep 1s
+	tmux send-keys -t LcApi "$VAR/run api" C-m
+	echo "[API] Launched !"
+	sleep 1s
+	tmux send-keys -t LcCleaner "$VAR/run cli" C-m
+	echo "[Cleaner] Launched !"
+	killall screen
+	exit 1
+elif [ "$1" = 'bot' ]; then
+	cd ${HOME}/Lc
+	while true; do
+      ./tg -p LcApi -s $HOME/Lc/bot.lua
+		killall screen
+		screen -wipe
+sleep 15
+	done
+	elif [ "$1" = 'cli' ]; then
+	cd ${HOME}/Lc
+	while true; do
+		screen ./tg -p LcCli -s $HOME/Lc/Cli.lua
+		killall screen
+		screen -wipe
+		sleep 15
+	done
+elif [ "$1" = 'api' ]; then
+	cd ${HOME}/Lc
+	while true; do
+		lua api.lua
+		killall lua
+		screen -wipe
+		sleep 15
+	done
+fi
